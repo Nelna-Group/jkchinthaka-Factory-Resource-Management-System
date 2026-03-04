@@ -36,8 +36,8 @@ class BaseService {
     );
 
     const [rows] = await db.query(
-      `SELECT * FROM ${this.table} WHERE ${whereClause} ORDER BY ${safeSort} ${safeOrder} LIMIT ? OFFSET ?`,
-      [...params, limit, offset]
+      `SELECT * FROM ${this.table} WHERE ${whereClause} ORDER BY ${safeSort} ${safeOrder} OFFSET ? ROWS FETCH NEXT ? ROWS ONLY`,
+      [...params, offset, limit]
     );
 
     return {
@@ -62,7 +62,7 @@ class BaseService {
     const placeholders = keys.map(() => '?').join(', ');
     
     const [result] = await db.query(
-      `INSERT INTO ${this.table} (${keys.join(', ')}) VALUES (${placeholders})`,
+      `INSERT INTO ${this.table} (${keys.join(', ')}) VALUES (${placeholders}); SELECT SCOPE_IDENTITY() AS insertId`,
       values
     );
     return { id: result.insertId, ...data };

@@ -28,8 +28,8 @@ class ElectricityService extends BaseService {
        LEFT JOIN assets a ON e.asset_id = a.id
        WHERE ${whereClause}
        ORDER BY e.${sort === 'date' ? 'date' : 'id'} ${order === 'asc' ? 'ASC' : 'DESC'}
-       LIMIT ? OFFSET ?`,
-      [...queryParams, limit, offset]
+       OFFSET ? ROWS FETCH NEXT ? ROWS ONLY`,
+      [...queryParams, offset, limit]
     );
 
     return {

@@ -27,8 +27,8 @@ class ProductionService extends BaseService {
       `SELECT * FROM production_target_new
        WHERE ${whereClause}
        ORDER BY ${sort === 'date' ? 'date' : 'id'} ${order === 'asc' ? 'ASC' : 'DESC'}
-       LIMIT ? OFFSET ?`,
-      [...queryParams, limit, offset]
+       OFFSET ? ROWS FETCH NEXT ? ROWS ONLY`,
+      [...queryParams, offset, limit]
     );
 
     return {

@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 class AuthService {
   async login(email, password) {
     const [users] = await db.query(
-      `SELECT u.*, r.name as role FROM users u JOIN roles r ON u.role_id = r.id WHERE u.email = ? AND u.is_active = true`,
+      `SELECT u.*, r.name as role FROM users u JOIN roles r ON u.role_id = r.id WHERE u.email = ? AND u.is_active = 1`,
       [email]
     );
 
@@ -21,7 +21,7 @@ class AuthService {
     }
 
     // Update last login
-    await db.query('UPDATE users SET last_login = NOW() WHERE id = ?', [user.id]);
+    await db.query('UPDATE users SET last_login = GETDATE() WHERE id = ?', [user.id]);
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
@@ -43,7 +43,7 @@ class AuthService {
 
     const passwordHash = await bcrypt.hash(data.password, 10);
     const [result] = await db.query(
-      'INSERT INTO users (name, email, password_hash, role_id) VALUES (?, ?, ?, ?)',
+      'INSERT INTO users (name, email, password_hash, role_id) VALUES (?, ?, ?, ?); SELECT SCOPE_IDENTITY() AS insertId',
       [data.name, data.email, passwordHash, data.role_id || 3]
     );
 

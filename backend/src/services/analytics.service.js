@@ -72,7 +72,7 @@ class AnalyticsService {
     for (const t of thresholds) {
       if (t.metric === 'electricity_daily_kWh') {
         const [recent] = await db.query(
-          `SELECT date, SUM(energy_kWh) as total FROM electricity_data WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY date HAVING total > ?`,
+          `SELECT date, SUM(energy_kWh) as total FROM electricity_data WHERE date >= DATEADD(DAY, -7, GETDATE()) GROUP BY date HAVING SUM(energy_kWh) > ?`,
           [t.warning_threshold]
         );
         recent.forEach(r => {
@@ -86,7 +86,7 @@ class AnalyticsService {
       }
       if (t.metric === 'water_daily_intake') {
         const [recent] = await db.query(
-          `SELECT date, SUM(intake) as total FROM water_meter_data WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY date HAVING total > ?`,
+          `SELECT date, SUM(intake) as total FROM water_meter_data WHERE date >= DATEADD(DAY, -7, GETDATE()) GROUP BY date HAVING SUM(intake) > ?`,
           [t.warning_threshold]
         );
         recent.forEach(r => {
@@ -100,7 +100,7 @@ class AnalyticsService {
       }
       if (t.metric === 'production_efficiency') {
         const [recent] = await db.query(
-          `SELECT date, line_id, ROUND(actual/target*100, 2) as eff FROM production_target_new WHERE date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND target > 0 HAVING eff < ?`,
+          `SELECT date, line_id, ROUND(actual/target*100, 2) as eff FROM production_target_new WHERE date >= DATEADD(DAY, -7, GETDATE()) AND target > 0 AND ROUND(actual/target*100, 2) < ?`,
           [t.warning_threshold]
         );
         recent.forEach(r => {
