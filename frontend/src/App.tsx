@@ -10,6 +10,7 @@ import ProductionPage from './pages/ProductionPage'
 import ReportsPage from './pages/ReportsPage'
 import SettingsPage from './pages/SettingsPage'
 import UserManagementPage from './pages/UserManagementPage'
+import AttendancePage from './pages/AttendancePage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="electricity" element={<ElectricityPage />} />
         <Route path="water" element={<WaterPage />} />
         <Route path="schedule" element={<SchedulePage />} />
+        <Route path="attendance" element={<AttendancePage />} />
         <Route path="production" element={<ProductionPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />

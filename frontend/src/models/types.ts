@@ -78,6 +78,33 @@ export interface Asset {
   is_active?: boolean;
 }
 
+export interface AttendanceEntry {
+  id?: number;
+  user_id: number;
+  user_name: string;
+  user_email: string;
+  role: string;
+  user_enabled: boolean;
+  attendance_date?: string;
+  status?: 'active' | 'deactive' | null;
+  notes?: string;
+  marked_by?: number | null;
+  marked_at?: string;
+  updated_at?: string;
+}
+
+export interface AttendanceDateResponse {
+  date: string;
+  data: AttendanceEntry[];
+}
+
+export interface AttendanceSummary {
+  date: string;
+  total_marked: number;
+  total_active: number;
+  total_deactive: number;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {

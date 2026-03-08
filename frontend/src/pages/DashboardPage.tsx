@@ -12,6 +12,7 @@ import {
 const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function DashboardPage() {
+  const dashboardYear = new Date().getFullYear();
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [elecTrend, setElecTrend] = useState<any[]>([]);
@@ -26,11 +27,11 @@ export default function DashboardPage() {
   const loadDashboard = async () => {
     try {
       const [kpiData, alertData, elecData, waterData, prodData] = await Promise.all([
-        analyticsService.getDashboard(2025).catch(() => null),
+        analyticsService.getDashboard(dashboardYear).catch(() => null),
         analyticsService.getAlerts().catch(() => []),
-        electricityService.getTrend(2025).catch(() => []),
-        waterService.getTrend(2025).catch(() => []),
-        productionService.getAchievement(2025).catch(() => []),
+        electricityService.getTrend(dashboardYear).catch(() => []),
+        waterService.getTrend(dashboardYear).catch(() => []),
+        productionService.getAchievement(dashboardYear).catch(() => []),
       ]);
       setKpis(kpiData);
       setAlerts(alertData || []);
@@ -45,14 +46,14 @@ export default function DashboardPage() {
   };
 
   const cards = kpis ? [
-    { title: 'Total Electricity Cost', value: `$${(kpis.electricity?.total_cost ?? 0).toLocaleString()}`, icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-950' },
-    { title: 'Total Water Usage', value: `${(kpis.water?.total_intake ?? 0).toLocaleString()} m³`, icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950' },
-    { title: 'Production Achievement', value: `${kpis.production?.achievement_pct ?? 0}%`, icon: Target, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-950' },
-    { title: 'Attendance Rate', value: `${kpis.attendance?.attendance_pct ?? 0}%`, icon: Users, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-950' },
-    { title: 'Holidays', value: `${kpis.attendance?.holidays ?? 0} days`, icon: Calendar, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-950' },
-    { title: 'Cost / Unit', value: `$${kpis.kpi?.cost_per_unit ?? 0}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950' },
-    { title: 'Energy / Unit', value: `${kpis.kpi?.energy_per_unit ?? 0} kWh`, icon: TrendingUp, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950' },
-    { title: 'Water / Unit', value: `${kpis.kpi?.water_per_unit ?? 0} m³`, icon: Droplets, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-950' },
+    { title: 'Total Electricity Cost', value: `$${(kpis.electricity?.total_cost ?? 0).toLocaleString()}`, icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-500/10' },
+    { title: 'Total Water Usage', value: `${(kpis.water?.total_intake ?? 0).toLocaleString()} m³`, icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+    { title: 'Production Achievement', value: `${kpis.production?.achievement_pct ?? 0}%`, icon: Target, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-500/10' },
+    { title: 'Attendance Rate', value: `${kpis.attendance?.attendance_pct ?? 0}%`, icon: Users, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10' },
+    { title: 'Holidays', value: `${kpis.attendance?.holidays ?? 0} days`, icon: Calendar, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+    { title: 'Cost / Unit', value: `$${kpis.kpi?.cost_per_unit ?? 0}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+    { title: 'Energy / Unit', value: `${kpis.kpi?.energy_per_unit ?? 0} kWh`, icon: TrendingUp, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
+    { title: 'Water / Unit', value: `${kpis.kpi?.water_per_unit ?? 0} m³`, icon: Droplets, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-500/10' },
   ] : [];
 
   if (loading) {
@@ -67,7 +68,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Factory Utility & Production Overview — 2025</p>
+        <p className="text-muted-foreground">Factory Utility & Production Overview — {dashboardYear}</p>
       </div>
 
       {/* KPI Cards */}

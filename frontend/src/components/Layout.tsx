@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import {
   LayoutDashboard, Zap, Droplets, Calendar, Target, FileText,
-  Settings, Users, Menu, X, Sun, Moon, LogOut, ChevronDown, Factory
+  Settings, Users, Menu, X, Sun, Moon, LogOut, ChevronDown, Factory, UserCheck
 } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -14,6 +14,7 @@ const navItems = [
   { path: '/electricity', icon: Zap, label: 'Electricity' },
   { path: '/water', icon: Droplets, label: 'Water Meter' },
   { path: '/schedule', icon: Calendar, label: 'Work Schedule' },
+  { path: '/attendance', icon: UserCheck, label: 'User Attendance' },
   { path: '/production', icon: Target, label: 'Production Target' },
   { path: '/reports', icon: FileText, label: 'Reports' },
   { path: '/settings', icon: Settings, label: 'Settings' },
@@ -36,7 +37,7 @@ export default function Layout() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b">
-        <div className="bg-primary rounded-lg p-2">
+        <div className="bg-primary rounded-xl p-2 shadow-sm">
           <Factory className="h-6 w-6 text-primary-foreground" />
         </div>
         {sidebarOpen && (
@@ -50,7 +51,7 @@ export default function Layout() {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map(item => {
-          const visibleToDataEntry = ['/', '/electricity', '/water', '/schedule', '/production'].includes(item.path);
+          const visibleToDataEntry = ['/', '/electricity', '/water', '/schedule', '/attendance', '/production'].includes(item.path);
           if (user?.role === 'Data Entry' && !visibleToDataEntry) return null;
           
           return (
@@ -60,10 +61,10 @@ export default function Layout() {
               end={item.path === '/'}
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'
                 }`
               }
             >
@@ -112,7 +113,7 @@ export default function Layout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
             />
             <motion.aside
               initial={{ x: -280 }}

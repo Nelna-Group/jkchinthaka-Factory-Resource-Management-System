@@ -145,6 +145,23 @@ CREATE TABLE alert_thresholds (
   updated_at DATETIME2 DEFAULT GETDATE()
 );
 
+-- User attendance
+IF OBJECT_ID('dbo.user_attendance', 'U') IS NULL
+CREATE TABLE user_attendance (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  attendance_date DATE NOT NULL,
+  user_id INT NOT NULL,
+  status NVARCHAR(16) NOT NULL DEFAULT 'deactive',
+  notes NVARCHAR(255) NULL,
+  marked_by INT NULL,
+  marked_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+  CONSTRAINT CK_user_attendance_status CHECK (status IN ('active', 'deactive')),
+  CONSTRAINT UQ_user_attendance_user_date UNIQUE (attendance_date, user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE NO ACTION,
+  FOREIGN KEY (marked_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
 -- Indexes (created separately for T-SQL)
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_electricity_date')
   CREATE INDEX idx_electricity_date ON electricity_data(date);
@@ -172,6 +189,12 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_audit_entity')
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_audit_created')
   CREATE INDEX idx_audit_created ON audit_log(created_at);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_user_attendance_date')
+  CREATE INDEX idx_user_attendance_date ON user_attendance(attendance_date);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_user_attendance_user')
+  CREATE INDEX idx_user_attendance_user ON user_attendance(user_id);
 
 -- Seed roles
 MERGE INTO roles AS target

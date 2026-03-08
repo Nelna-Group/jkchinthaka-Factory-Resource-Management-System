@@ -105,6 +105,13 @@ const assetSchema = z.object({
   description: z.string().optional()
 });
 
+const attendanceMarkSchema = z.object({
+  attendance_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
+  user_id: z.number().int().positive('User ID required'),
+  status: z.enum(['active', 'deactive']),
+  notes: z.string().max(255).optional()
+});
+
 const paginationSchema = z.object({
   page: z.string().transform(Number).pipe(z.number().int().min(1)).optional(),
   limit: z.string().transform(Number).pipe(z.number().int().min(1).max(100)).optional(),
@@ -125,5 +132,6 @@ module.exports = {
   workScheduleSchema,
   productionTargetSchema,
   assetSchema,
+  attendanceMarkSchema,
   paginationSchema
 };

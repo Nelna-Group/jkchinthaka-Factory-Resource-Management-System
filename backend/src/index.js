@@ -18,6 +18,7 @@ const productionRoutes = require('./routes/production.routes');
 const reportRoutes = require('./routes/report.routes');
 const assetRoutes = require('./routes/asset.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const attendanceRoutes = require('./routes/attendance.routes');
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || 5000;
@@ -58,6 +59,7 @@ app.use('/api/production', productionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // 404 handler
 app.use((req, res) => {

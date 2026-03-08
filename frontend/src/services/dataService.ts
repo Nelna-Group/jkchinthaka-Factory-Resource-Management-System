@@ -199,3 +199,18 @@ export const assetService = {
     return data;
   },
 };
+
+export const attendanceService = {
+  getByDate: async (date: string) => {
+    const { data } = await api.get('/attendance', { params: { date } });
+    return data;
+  },
+  getSummary: async (date: string) => {
+    const { data } = await api.get('/attendance/summary', { params: { date } });
+    return data;
+  },
+  mark: async (body: { attendance_date: string; user_id: number; status: 'active' | 'deactive'; notes?: string }) => {
+    const { data } = await api.post('/attendance/mark', body);
+    return data;
+  }
+};
