@@ -122,7 +122,7 @@ async function seed() {
         const cooling = Math.round(intake * 0.15 * 100) / 100;
         const cost = Math.round(intake * 2.5 * 100) / 100;
         await db.query(
-          'INSERT INTO water_meter_data (date, intake, ppu_reading, fpu_reading, chiller, cooling_tower, cost, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
+          'INSERT INTO dbo.water_meter_data (date, intake, [PPU 1 Reading], [FPU 1 Reading], [Chiller Reading], [Cooling tower Reading], cost, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
           [date, intake, ppu, fpu, chiller, cooling, cost]
         );
       }

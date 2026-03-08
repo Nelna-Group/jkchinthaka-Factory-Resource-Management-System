@@ -1,7 +1,10 @@
 const db = require('../models/db');
+const waterService = require('./water.service');
 
 class AnalyticsService {
   async getDashboardKPIs(year, month) {
+    await waterService.ensureTable();
+
     const safeYear = parseInt(year) || new Date().getFullYear();
     const safeMonth = month ? parseInt(month) : null;
 
@@ -25,7 +28,7 @@ class AnalyticsService {
     // Water summary
     const [water] = await db.query(
       `SELECT COALESCE(SUM(intake), 0) as total_intake, COALESCE(SUM(cost), 0) as total_cost
-       FROM water_meter_data WHERE ${dateCondition}`,
+       FROM dbo.water_meter_data WHERE ${dateCondition}`,
       dateParams
     );
 
@@ -79,6 +82,8 @@ class AnalyticsService {
   }
 
   async getAlerts() {
+    await waterService.ensureTable();
+
     const [thresholds] = await db.query('SELECT * FROM alert_thresholds WHERE is_active = 1');
     const alerts = [];
 
@@ -99,7 +104,7 @@ class AnalyticsService {
       }
       if (t.metric === 'water_daily_intake') {
         const [recent] = await db.query(
-          `SELECT date, SUM(intake) as total FROM water_meter_data WHERE date >= DATEADD(DAY, -7, GETDATE()) GROUP BY date HAVING SUM(intake) > ?`,
+          `SELECT date, SUM(intake) as total FROM dbo.water_meter_data WHERE date >= DATEADD(DAY, -7, GETDATE()) GROUP BY date HAVING SUM(intake) > ?`,
           [t.warning_threshold]
         );
         recent.forEach(r => {

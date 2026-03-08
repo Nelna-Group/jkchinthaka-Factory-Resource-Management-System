@@ -30,11 +30,15 @@ export interface WaterMeterData {
   id: number;
   date: string;
   intake: number;
-  ppu_reading?: number;
-  fpu_reading?: number;
-  chiller?: number;
-  cooling_tower?: number;
-  column_data?: Record<string, unknown>;
+  ppu1_reading?: number;
+  ppu2_reading?: number;
+  fpu1_reading?: number;
+  fpu2_reading?: number;
+  chiller_reading?: number;
+  cooling_tower_reading?: number;
+  column1?: number;
+  column2?: number;
+  column3?: number;
   cost?: number;
   notes?: string;
 }

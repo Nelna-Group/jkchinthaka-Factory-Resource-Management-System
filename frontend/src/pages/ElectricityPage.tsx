@@ -14,6 +14,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
+const REQUIRED_ASSET_NAMES = [
+  'CEB IN 01',
+  'FPU 01',
+  'REFRIGIRATION AREA',
+  'PPU',
+  'OLD COLD ROOM',
+  'OFFICE AREA',
+  'CEB IN 02',
+  'CHEMICAL TREATMENT PLANT',
+  'FPU 02'
+];
+
 const schema = z.object({
   asset_id: z.coerce.number().min(1, 'Select an asset'),
   date: z.string().min(1, 'Date required'),
@@ -25,6 +37,18 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
+
+function sortAssetsForDropdown(inputAssets: Asset[]) {
+  const requiredIndex = new Map(REQUIRED_ASSET_NAMES.map((name, idx) => [name.toLowerCase(), idx]));
+  return [...inputAssets].sort((a, b) => {
+    const ai = requiredIndex.get(String(a.name || '').toLowerCase());
+    const bi = requiredIndex.get(String(b.name || '').toLowerCase());
+    if (ai !== undefined && bi !== undefined) return ai - bi;
+    if (ai !== undefined) return -1;
+    if (bi !== undefined) return 1;
+    return String(a.name || '').localeCompare(String(b.name || ''));
+  });
+}
 
 export default function ElectricityPage() {
   const [records, setRecords] = useState<ElectricityData[]>([]);
@@ -53,7 +77,37 @@ export default function ElectricityPage() {
 
   useEffect(() => { loadData(); }, [loadData]);
   useEffect(() => {
-    assetService.getAll({ page: 1, limit: 100 }).then((r: any) => setAssets(r.data || [])).catch(() => {});
+    const loadAssets = async () => {
+      try {
+        const initial = await assetService.getAll({ page: 1, limit: 300, sort: 'id', order: 'asc' });
+        let fetchedAssets: Asset[] = initial.data || [];
+
+        const existing = new Set(fetchedAssets.map((a) => String(a.name || '').toLowerCase()));
+        const missing = REQUIRED_ASSET_NAMES.filter((name) => !existing.has(name.toLowerCase()));
+
+        // Try to create missing required assets so dropdown always has the expected values.
+        if (missing.length > 0) {
+          await Promise.all(
+            missing.map((name) =>
+              assetService.create({
+                name,
+                type: 'Area',
+                location: '',
+                description: 'Auto-created for electricity entry dropdown'
+              }).catch(() => null)
+            )
+          );
+          const refreshed = await assetService.getAll({ page: 1, limit: 300, sort: 'id', order: 'asc' });
+          fetchedAssets = refreshed.data || fetchedAssets;
+        }
+
+        setAssets(sortAssetsForDropdown(fetchedAssets));
+      } catch {
+        setAssets([]);
+      }
+    };
+
+    loadAssets();
   }, []);
 
   const onSubmit = async (data: FormData) => {

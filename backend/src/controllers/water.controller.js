@@ -32,7 +32,6 @@ const getById = async (req, res, next) => {
 const create = async (req, res, next) => {
   try {
     const data = { ...req.body, created_by: req.user.id };
-    if (data.column_data) data.column_data = JSON.stringify(data.column_data);
     const result = await waterService.create(data);
     res.status(201).json(result);
   } catch (error) { next(error); }
@@ -41,7 +40,6 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const data = { ...req.body };
-    if (data.column_data) data.column_data = JSON.stringify(data.column_data);
     const result = await waterService.update(req.params.id, data);
     if (!result) return res.status(404).json({ error: 'Record not found' });
     res.json(result);

@@ -59,15 +59,19 @@ CREATE TABLE electricity_data (
 
 -- Water meter data
 IF OBJECT_ID('dbo.water_meter_data', 'U') IS NULL
-CREATE TABLE water_meter_data (
+CREATE TABLE dbo.water_meter_data (
   id INT IDENTITY(1,1) PRIMARY KEY,
   date DATE NOT NULL,
   intake DECIMAL(12,2) NOT NULL,
-  ppu_reading DECIMAL(12,2),
-  fpu_reading DECIMAL(12,2),
-  chiller DECIMAL(12,2),
-  cooling_tower DECIMAL(12,2),
-  column_data NVARCHAR(MAX),
+  [PPU 1 Reading] DECIMAL(12,2),
+  [PPU 2 Reading] DECIMAL(12,2),
+  [FPU 1 Reading] DECIMAL(12,2),
+  [FPU 2 Reading] DECIMAL(12,2),
+  [Chiller Reading] DECIMAL(12,2),
+  [Cooling tower Reading] DECIMAL(12,2),
+  [Column 1] DECIMAL(12,2),
+  [Column 2] DECIMAL(12,2),
+  [Column 3] DECIMAL(12,2),
   cost DECIMAL(12,2),
   notes NVARCHAR(MAX),
   created_by INT,
@@ -149,7 +153,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_electricity_asset')
   CREATE INDEX idx_electricity_asset ON electricity_data(asset_id);
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_water_date')
-  CREATE INDEX idx_water_date ON water_meter_data(date);
+  CREATE INDEX idx_water_date ON dbo.water_meter_data(date);
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_schedule_day')
   CREATE INDEX idx_schedule_day ON work_schedule(day);

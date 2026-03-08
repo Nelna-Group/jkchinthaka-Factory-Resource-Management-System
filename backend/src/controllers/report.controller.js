@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const db = require('../models/db');
+const waterService = require('../services/water.service');
 
 const generateElectricityReport = async (req, res, next) => {
   try {
@@ -37,12 +38,14 @@ const generateElectricityReport = async (req, res, next) => {
 
 const generateWaterReport = async (req, res, next) => {
   try {
+    await waterService.ensureTable();
+
     const { startDate, endDate, format = 'xlsx' } = req.query;
     const start = startDate || '2025-01-01';
     const end = endDate || '2025-12-31';
 
     const [data] = await db.query(
-      `SELECT * FROM water_meter_data WHERE date BETWEEN ? AND ? ORDER BY date`,
+      `SELECT * FROM dbo.water_meter_data WHERE date BETWEEN ? AND ? ORDER BY date`,
       [start, end]
     );
 
